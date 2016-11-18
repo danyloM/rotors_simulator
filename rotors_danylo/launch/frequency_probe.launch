@@ -1,0 +1,12 @@
+<launch>
+  <!-- Declare arguments to be passed in -->
+  <arg name="topic_name" />
+  <arg name="topic_type" />
+  <arg name="probe_name" default="frequency_probe" />
+
+  <!-- Read argument values: get the topic name to probe the frequency of -->
+  <!-- <param name="probed_topic_name" value="$(arg topic_name)" /> -->
+
+  <!-- Launch the probe -->
+  <node name="$(arg probe_name)" args="$(arg topic_name) $(arg topic_type)" pkg="rotors_danylo" type="frequency_probe_node" output="screen" />
+</launch>

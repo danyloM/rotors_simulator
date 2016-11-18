@@ -1,0 +1,77 @@
+<launch>
+  
+  <arg name="mav_name" default="hummingbird"/>
+  <arg name="enable_logging" default="false" />
+  <arg name="enable_ground_truth" default="true" />
+  <arg name="log_file" default="$(arg mav_name)" />
+  <arg name="paused" value="true"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    
+    <arg name="world_name" value="$(find rotors_gazebo)/worlds/basic.world" />
+    <!-- <arg name="debug" value="true"/> -->
+    
+    <arg name="paused" value="$(arg paused)"/>
+    <!-- <arg name="gui" value="false"/> -->
+    
+  </include>
+
+  <group ns="$(arg mav_name)">
+    
+    <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
+      <arg name="mav_name" value="$(arg mav_name)" />
+      <arg name="model" value="$(find rotors_description)/urdf/mav_generic_odometry_sensor.gazebo" />
+      <arg name="enable_logging" value="$(arg enable_logging)" />
+      <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
+      <arg name="log_file" value="$(arg log_file)"/>
+    </include>
+
+    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find rotors_danylo)/rotors_danylo_rosconsole.conf"/>
+
+    <node name="lqr_controller_node" pkg="rotors_danylo" type="lqr_controller_node" output="screen">
+      <rosparam command="load" file="$(find rotors_danylo)/resource/lqr_controller.yaml" />
+      <rosparam command="load" file="$(find rotors_gazebo)/resource/$(arg mav_name).yaml" />
+      <!-- <remap from="odometry" to="odometry_sensor1/odometry" /> -->
+    </node>
+
+    <!-- hovering_example : publish a (0,0,1) waypoint for the quadcopter -->
+    <node name="hovering_example" pkg="rotors_gazebo" type="hovering_example" output="screen"/>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    
+  </group>
+
+  <!-- publish probed signal frequencies -->
+  <!-- odometry sensor frequency probe -->
+  <include file="$(find rotors_danylo)/launch/frequency_probe.launch">
+    <arg name="probe_name" value="odometry_probe" />
+    <arg name="topic_name" value="/hummingbird/ground_truth/odometry" />
+    <arg name="topic_type" value="odometry" />
+  </include>
+  <!-- imu sensor frequency probe -->
+  <include file="$(find rotors_danylo)/launch/frequency_probe.launch">
+    <arg name="probe_name" value="imu_probe" />
+    <arg name="topic_name" value="/hummingbird/ground_truth/imu" />
+    <arg name="topic_type" value="imu" />
+  </include>
+  <!--  pose command frequency probe -->
+  <include file="$(find rotors_danylo)/launch/frequency_probe.launch">
+    <arg name="probe_name" value="pose_probe" />
+    <arg name="topic_name" value="/hummingbird/command/pose" />
+    <arg name="topic_type" value="pose" />
+  </include>
+  <!-- trajectory command frequency probe -->
+  <include file="$(find rotors_danylo)/launch/frequency_probe.launch">
+    <arg name="probe_name" value="trajectory_probe" />
+    <arg name="topic_name" value="/hummingbird/command/trajectory" />
+    <arg name="topic_type" value="trajectory" />
+  </include>
+  <!-- controller motor speed output frequency probe -->
+  <include file="$(find rotors_danylo)/launch/frequency_probe.launch">
+    <arg name="probe_name" value="motor_probe" />
+    <arg name="topic_name" value="/hummingbird/command/motor_speed" />
+    <arg name="topic_type" value="motor_speed" />
+  </include>
+  
+</launch>

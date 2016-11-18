@@ -1,0 +1,31 @@
+<package>
+  <name>rotors_danylo</name>
+  <version>2.0.1</version>
+  <description>RotorS control tests package</description>
+
+  <maintainer email="malyutad@student.ethz.ch">Danylo Malyuta</maintainer>
+
+  <author>Danylo Malyuta</author>
+
+  <license>ASL 2.0</license>
+
+  <url type="website">https://github.com/danyloM/rotors_simulator/tree/feature/danyloM_control_tests</url>
+  <url type="bugtracker">https://github.com/ethz-asl/rotors_simulator/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>mav_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>cmake_modules</build_depend>
+
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>mav_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+
+</package>
