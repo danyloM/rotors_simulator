@@ -25,6 +25,9 @@ LQRControllerNode::LQRControllerNode() {
   odometry_sub_ = nh.subscribe((ground_truth_+odometry_sensor_).c_str(), 1,
                                &LQRControllerNode::OdometryCallback, this);
 
+  imu_sub_ = nh.subscribe((ground_truth_+imu_sensor_).c_str(), 1,
+                          &LQRControllerNode::IMUCallback, this);
+
   // motor_velocity_reference_pub_ = nh.advertise<mav_msgs::Actuators>(
   //     mav_msgs::default_topics::COMMAND_ACTUATORS, 1);
 
@@ -44,8 +47,10 @@ void LQRControllerNode::InitializeParams() {
   // sensor topics
   ground_truth_ = "ground_truth/";
   odometry_sensor_ = mav_msgs::default_topics::ODOMETRY;
+  imu_sensor_ = mav_msgs::default_topics::IMU;
 
-  num_msgs_received_ = 0;
+  num_msgs_odom_received_ = 0;
+  num_msgs_imu_received_ = 0;
 
   // controller execution frequency
   controller_Ts_ = double(1)/100;
@@ -135,7 +140,7 @@ void LQRControllerNode::TimedCommandCallback(const ros::TimerEvent& e) {
 }
 
 void LQRControllerNode::OdometryCallback(const nav_msgs::OdometryConstPtr& odometry_msg) {
-  ++num_msgs_received_;
+  ++num_msgs_odom_received_;
   
   // ROS_INFO_ONCE("LQRController got first odometry message.");
 
@@ -143,14 +148,21 @@ void LQRControllerNode::OdometryCallback(const nav_msgs::OdometryConstPtr& odome
   // lqr_controller_.SetOdometry(odometry_);
 }
 
+void LQRControllerNode::IMUCallback(const sensor_msgs::ImuConstPtr& imu_msg) {
+  ++num_msgs_imu_received_;
+}
+
 void LQRControllerNode::TimerCallback(const ros::TimerEvent& event) {
   time_now_ = ros::Time::now().toNSec()*pow(10,-9);
   double dt = time_now_-time_prev_;
   time_prev_ = time_now_;
 
-  printf("t = %.3f freq = %.3f\n",ros::Time::now().toSec(),double(num_msgs_received_)/dt);
+  printf("call time: t = %.3f\n",time_now_);
+  printf("odometry:  freq = %.3f\n",double(num_msgs_odom_received_)/dt);
+  printf("imu:       freq = %.3f\n",double(num_msgs_imu_received_)/dt);
   
-  num_msgs_received_ = 0;
+  num_msgs_odom_received_ = 0;
+  num_msgs_imu_received_ = 0;
 }
 
 // void LQRControllerNode::ControllerCallback(const ros::TimerEvent& event) {

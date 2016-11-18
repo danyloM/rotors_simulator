@@ -36,7 +36,8 @@ class LQRControllerNode {
   bool used_message_;
   double time_now_;
   double time_prev_;
-  int num_msgs_received_;
+  int num_msgs_odom_received_;
+  int num_msgs_imu_received_;
   
   double controller_Ts_;
   rotors_danylo::EigenOdometry odometry_;
@@ -46,12 +47,14 @@ class LQRControllerNode {
   // sensor topics
   std::string ground_truth_;
   std::string odometry_sensor_;
+  std::string imu_sensor_;
 
   // subscribers (to receive signals for control)
   ros::Subscriber cmd_trajectory_sub_;
   ros::Subscriber cmd_multi_dof_joint_trajectory_sub_;
   ros::Subscriber cmd_pose_sub_;
   ros::Subscriber odometry_sub_;
+  ros::Subscriber imu_sub_;
 
   // publishers (to publish controller output)
   ros::Publisher motor_velocity_reference_pub_;
@@ -65,6 +68,7 @@ class LQRControllerNode {
   void MultiDofJointTrajectoryCallback(const trajectory_msgs::MultiDOFJointTrajectoryConstPtr& trajectory_reference_msg);
   void CommandPoseCallback(const geometry_msgs::PoseStampedConstPtr& pose_msg);
   void OdometryCallback(const nav_msgs::OdometryConstPtr& odometry_msg);
+  void IMUCallback(const sensor_msgs::ImuConstPtr& imu_msg);
   void ControllerCallback(const ros::TimerEvent& event);
   
   void TimerCallback(const ros::TimerEvent& event);
