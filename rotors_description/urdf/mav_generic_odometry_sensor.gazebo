@@ -24,6 +24,7 @@
   <xacro:include filename="$(find rotors_description)/urdf/$(arg mav_name)_base.xacro" />
 
   <!-- Mount a generic odometry sensor without odometry map (working everywhere). -->
+  <!-- The odometry_plugin_macro is found in component_snippets.xacro  -->
   <xacro:odometry_plugin_macro
     namespace="${namespace}"
     odometry_sensor_suffix="1"
